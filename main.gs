@@ -8,13 +8,6 @@ const slackWorkSpaceUrl = props.SLACK_WORKSPACE_URL;
 
 function doPost(e){
   try {
-    // デバッグ用
-    /*
-    const itemChannel = "DCVUAQPFX";
-    const itemTs = "1613184706.000200";
-    const reaction = "+1";
-    */
-    
     const json = JSON.parse(e.postData.getDataAsString());
     const itemChannel = json.event.item.channel;
     const itemTs = json.event.item.ts;
@@ -26,24 +19,16 @@ function doPost(e){
     ])
     .then(function(data) {
       const [channelName, userId] = data;
-      
       const message = "<@" + userId + ">" + "[" + channelName + "]にリアクションがつきました。\n\n" + slackWorkSpaceUrl + "archives/" + itemChannel +"/p" + itemTs;
-        
-        const jsonData =
-        {
-          "text": ":" +reaction + ":" + message
-        };
-        const payload = JSON.stringify(jsonData);
+      const jsonData = { "text": ":" +reaction + ":" + message };
+      const payload = JSON.stringify(jsonData);
+      const options = {
+        "method" : "post",
+        "contentType" : "application/json",
+        "payload" : payload
+      };
 
-        const options =
-        {
-          "method" : "post",
-          "contentType" : "application/json",
-          "payload" : payload
-        };
-
-        UrlFetchApp.fetch(webhookUrl, options);
-      
+      UrlFetchApp.fetch(webhookUrl, options);
     })
     .then(() => {
       return ContentService.createTextOutput(params.challenge);
